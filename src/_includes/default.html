@@ -5,31 +5,34 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
-      {{title}}
+      Antonio.Town
     </title>
-    {% if description %}
-      <meta name="description" content="{{description}}"/>
-    {% endif %}
-    {% block head %}{% endblock %}
-    <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
-    {% if prism == true %}
-      <link rel="stylesheet" type="text/css" href="/static/css/prism-tomorrow.css">
-    {% endif %}
+    <meta name="description" content="Welcome 2 ANTONIO.TOWN"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/global.css">
   </head>
   <body>
-    {% include "./partials/navbar.html" %}
 
-    {{ content | safe }}
+<section>
+  {% set postslist = collections.toniopost %}
 
-    {% include "./partials/footer.html" %}
+  <h3>{{ postlist }}</h3>
+  {% for post in postslist | reverse %}
+  <div>
+    <h1> 
+      {% if (loop.index0 == 0) %}
+        www.antonio.town
+      {% else %}
+        www.antonio.town ({{loop.index0 % 10}})
+      {% endif %}
+      
+      - {{ post.date | readableDate }}
+    </h1>
+    <img src="{{ post.data.photo }}" alt="">
 
-    <script src="/static/js/alpine.js"></script>
+  </div>
+  {% endfor %}
+</section>
 
-    {% if path == "home" %}
-      <!-- Netlify Identity Widget -->
-      <!-- Needed only if you are using Netlify Identity feature -->
-      <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-    {% endif %}
 
   </body>
 </html>
