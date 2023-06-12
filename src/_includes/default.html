@@ -20,7 +20,7 @@
   </div>
 
 
-<pre><code>{{ collections.toniopost | debug }}</code></pre>
+<!-- <pre><code>{{ collections.toniopost | debug }}</code></pre> -->
   
   <section class="feed">
     {% set postslist = collections.toniopost %}
@@ -44,7 +44,8 @@
         </div>
       </div>
       <div class="window-body">
-        <img src="{{ post.data.photo }}" alt="">
+        <!-- <img src="{{ post.data.photo }}" alt="post.data.title"> -->
+        <img webc:is="eleventy-image" :width="[600, auto]" src="{{ post.data.photo }}" alt="post.data.title">
       </div>
     </div>
     {% endfor %}
