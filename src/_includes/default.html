@@ -19,6 +19,9 @@
     <img src="./static/img/balloons.gif" alt="">
   </div>
 
+
+<pre><code>{{ collections.toniopost | debug }}</code></pre>
+  
   <section class="feed">
     {% set postslist = collections.toniopost %}
 
@@ -32,7 +35,7 @@
           {% else %}
           antonio.town ({{loop.index0 % 10}})
           {% endif %}
-          - {{ post.date | readableDate }}
+          - {{ post.page.date | readableDate }}
         </div>
         <div class="title-bar-controls">
           <button aria-label="Minimize" onclick="minimizeBar.call(this)"></button>
