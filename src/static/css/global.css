@@ -69,3 +69,18 @@ body{
   width: 100dvw;
   height: 100dvh;
 }
+
+#header{
+  height: 100px;
+  margin-bottom: 20px;
+  object-position: center;
+  object-fit: contain;
+  max-width: 95%;
+  cursor: pointer;
+}
+
+@media only screen and (max-width: 600px) {
+  #header {
+    height: 74px;
+  }
+}
