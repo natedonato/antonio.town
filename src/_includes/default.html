@@ -35,8 +35,8 @@
           - {{ post.date | readableDate }}
         </div>
         <div class="title-bar-controls">
-          <button aria-label="Minimize"></button>
-          <button aria-label="Maximize"></button>
+          <button aria-label="Minimize" onclick="minimizeBar.call(this)"></button>
+          <button aria-label="Maximize" onclick="maximizeBar.call(this)"></button>
           <button aria-label="Close"></button>
         </div>
       </div>
@@ -49,10 +49,21 @@
 
   <script>
 
+
+    function minimizeBar(){
+      let el = this.parentElement.parentElement.parentElement;
+      console.log(el)
+      el.classList.toggle('minimized')
+    }
+    function maximizeBar() {
+      // let el = this.parentElement.parentElement.parentElement;
+      // console.log(el)
+      // el.classList.toggle('maximized')
+    }
+
     let previousTop = document.querySelector('.photopost')
 
     function moveToTop(){
-      console.log(this)
       previousTop.style.zIndex = 1;
       this.style.zIndex = 100;
       previousTop = this;

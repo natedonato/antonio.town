@@ -58,16 +58,24 @@ body{
 
 .window.minimized .window-body{
   height: 0px;
-  margin: 0px 8px;
+  margin: 0px 6px;
   overflow: hidden;
 }
+.window.minimized{
+  margin-bottom: 80px;
+}
 
-.window.maximied{
+.window.maximized{
+  z-index: 999;
   position: fixed;
   top: 0;
   left: 0;
-  width: 100dvw;
+  bottom: 0;
+  right: 0;
+  width: 100dvw !important;
+  max-width: 100dw !important;
   height: 100dvh;
+  transform: translate(0,0) !important;
 }
 
 #header{
