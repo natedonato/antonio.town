@@ -1,38 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>
-      Antonio.Town
-    </title>
-    <meta name="description" content="Welcome 2 ANTONIO.TOWN"/>
-    <link rel="stylesheet" type="text/css" href="/static/css/global.css">
-  </head>
-  <body>
 
-<section>
-  {% set postslist = collections.toniopost %}
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>
+    Antonio.Town
+  </title>
+  <meta name="description" content="Welcome 2 ANTONIO.TOWN" />
+  <link rel="stylesheet" href="https://unpkg.com/98.css" />
+  <link rel="stylesheet" type="text/css" href="/static/css/global.css">
+</head>
 
-  <h3>{{ postlist }}</h3>
-  {% for post in postslist | reverse %}
-  <div>
-    <h1> 
-      {% if (loop.index0 == 0) %}
-        www.antonio.town
-      {% else %}
-        www.antonio.town ({{loop.index0 % 10}})
-      {% endif %}
-      
-      - {{ post.date | readableDate }}
-    </h1>
-    <img src="{{ post.data.photo }}" alt="">
-
+<body>
+  <div class="logo">
+    <img src="./static/img/antoniotownflame.gif" alt="">
+    <img src="./static/img/balloons.gif" alt="">
   </div>
-  {% endfor %}
-</section>
 
+  <section class="feed">
+    {% set postslist = collections.toniopost %}
 
-  </body>
+    {% for post in postslist | reverse %}
+    
+    <div class="window photopost" style="width:fit-content" onclick="moveToTop.call(this)">
+      <div class="title-bar">
+        <div class="title-bar-text">
+          {% if (loop.index0 == 0) %}
+          antonio.town
+          {% else %}
+          antonio.town ({{loop.index0 % 10}})
+          {% endif %}
+          - {{ post.date | readableDate }}
+        </div>
+        <div class="title-bar-controls">
+          <button aria-label="Minimize"></button>
+          <button aria-label="Maximize"></button>
+          <button aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="window-body">
+        <img src="{{ post.data.photo }}" alt="">
+      </div>
+    </div>
+    {% endfor %}
+  </section>
+
+  <script>
+
+    let previousTop = document.querySelector('.photopost')
+
+    function moveToTop(){
+      console.log(this)
+      previousTop.style.zIndex = 1;
+      this.style.zIndex = 100;
+      previousTop = this;
+    }
+
+    function reposition(){
+      let offsetX = document.querySelector(".feed").clientWidth * 0.095;
+      let offsetY = 50;
+      document.querySelectorAll('.photopost').forEach(el => {
+
+        let x = Math.random() * offsetX - offsetX/2
+        let y = Math.random() * offsetY - offsetY/2
+        el.style.transform = `translate(${x}px ,${y}px)`
+        el.style.marginBottom = Math.random() * offsetY - offsetY/2
+      })
+    }
+    reposition();
+
+  </script>
+</body>
 </html>

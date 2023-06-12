@@ -1,3 +1,71 @@
-/* html, body{
-  background-color: red;
-} */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+}
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+input, button, textarea, select {
+  font: inherit;
+}
+p, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+}
+
+body{
+  background-image: url("../img/water.png");
+}
+
+.logo{
+  margin: 0 auto;
+  width: fit-content;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+.feed{
+  margin: 0 auto;
+  max-width: min(100%, 1200px);
+
+}
+
+.feed .photopost{
+  max-width: 80%;
+  margin: 0 auto;
+  margin-bottom: 20px;
+  position: relative; 
+  z-index: 1;
+}
+
+.feed .photopost:last-of-type{
+  margin-bottom: 80px !important;
+}
+
+.photopost .window-body{
+  margin: 6px;
+}
+
+.window.minimized .window-body{
+  height: 0px;
+  margin: 0px 8px;
+  overflow: hidden;
+}
+
+.window.maximied{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100dvw;
+  height: 100dvh;
+}
