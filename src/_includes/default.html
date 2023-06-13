@@ -21,16 +21,16 @@
   </div>
 
 
-<!-- <pre><code>{{ collections.toniopost | debug }}</code></pre> -->
-  
+  <!-- <pre><code>{{ collections.toniopost | debug }}</code></pre> -->
+
   <section class="feed">
     {% set postslist = collections.toniopost %}
 
     {% for post in postslist | reverse %}
-    
-    <div class="window photopost" style="width:fit-content" onclick="moveToTop.call(this)">
+
+    <div class="window photopost" style="width:fit-content" ontouchstart="moveToTop.call(this)" onmousedown="moveToTop.call(this)">
       <div class="title-bar">
-        <div class="title-bar-text">
+        <div class="title-bar-text no-select">
           {% if (loop.index0 == 0) %}
           antonio.town
           {% else %}
@@ -39,14 +39,13 @@
           - {{ post.page.date | readableDate }}
         </div>
         <div class="title-bar-controls">
-          <button aria-label="Minimize" onclick="minimizeBar.call(this)"></button>
-          <button aria-label="Maximize" onclick="maximizeBar.call(this)"></button>
-          <button aria-label="Close"></button>
+          <button aria-label="Minimize" onclick="minimizeBar.call(this,event)"></button>
+          <button aria-label="Maximize" onclick="maximizeBar.call(this,event)"></button>
+          <button aria-label="Close" onclick="closeBar.call(this,event)"></button>
         </div>
       </div>
       <div class="window-body">
-        <!-- <img src="{{ post.data.photo }}" alt="post.data.title"> -->
-        <img webc:is="eleventy-image" :width="[600, auto]" src="{{ post.data.photo }}" alt="post.data.title">
+        <img src="{{ post.data.photo }}" alt="post.data.title">
       </div>
     </div>
     {% endfor %}
@@ -55,49 +54,61 @@
   <script>
 
 
-    function minimizeBar(){
+    function minimizeBar(e) {
       let el = this.parentElement.parentElement.parentElement;
-      console.log(el)
       el.classList.toggle('minimized')
     }
-    function maximizeBar() {
+    function maximizeBar(e) {
       // let el = this.parentElement.parentElement.parentElement;
-      // console.log(el)
       // el.classList.toggle('maximized')
     }
 
+    function closeBar(e){
+
+    }
+
+    // move clicked windo to "top"
     let previousTop = document.querySelector('.photopost')
 
-    function moveToTop(){
+    function moveToTop() {
       previousTop.style.zIndex = 1;
       this.style.zIndex = 100;
       previousTop = this;
     }
 
-    function reposition(){
+
+    // give windows random offset
+    function reposition() {
       let offsetX = document.querySelector(".feed").clientWidth * 0.095;
       let offsetY = 50;
       document.querySelectorAll('.photopost').forEach(el => {
 
-        let x = Math.random() * offsetX - offsetX/2
-        let y = Math.random() * offsetY - offsetY/2
+        let x = Math.floor(Math.random() * offsetX - offsetX / 2)
+        let y = Math.floor(Math.random() * offsetY - offsetY / 2)
         el.style.transform = `translate(${x}px ,${y}px)`
-        el.style.marginBottom = Math.random() * offsetY - offsetY/2
+        el.style.marginBottom = Math.random() * offsetY - offsetY / 2
+        el.dataset.transX = x;
+        el.dataset.transY = y;
       })
     }
     reposition();
 
+
+
+
+
+    // logo swap animation
     let num_gif_logos = 9;
     let num_png_logos = 7;
     let logo_url = "./static/img/logos/atlogo"
     let logos = [];
-    
-    for(let i = 1; i < num_gif_logos; i++){
-      logos.push(logo_url + i +'.gif')
+
+    for (let i = 1; i < num_gif_logos; i++) {
+      logos.push(logo_url + i + '.gif')
     }
 
-    for(let i = 1; i < num_png_logos; i++){
-      logos.push(logo_url + i +'.png')
+    for (let i = 1; i < num_png_logos; i++) {
+      logos.push(logo_url + i + '.png')
     }
 
     shuffle(logos);
@@ -105,7 +116,7 @@
     const header = document.getElementById('header');
 
     let logoIdx = 0;
-    function changeLogo(){
+    function changeLogo() {
       logoIdx += 1;
       logoIdx %= logos.length;
       header.src = logos[logoIdx]
@@ -114,16 +125,126 @@
     setInterval(changeLogo, 3000);
 
     function shuffle(array) {
-        let currentIndex = array.length, randomIndex;
-        while (currentIndex != 0) {
-          randomIndex = Math.floor(Math.random() * currentIndex);
-          currentIndex--;
-          [array[currentIndex], array[randomIndex]] = [
-            array[randomIndex], array[currentIndex]];
+      let currentIndex = array.length, randomIndex;
+      while (currentIndex != 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        [array[currentIndex], array[randomIndex]] = [
+          array[randomIndex], array[currentIndex]];
+      }
+
+      return array;
+    }
+
+
+
+    // draggable windows
+    let bars = document.querySelectorAll('.title-bar');
+    bars.forEach(bar => {
+      bar.addEventListener("mousedown",pickup);
+      bar.addEventListener("touchstart",pickup);
+    })
+
+    let pickupData = {mouse: null, element: null};
+    
+    function pickup(e) {
+      if(e.target.tagName === "BUTTON"){return;}
+
+      let frame = e.currentTarget.parentElement;
+      pickupData.mouse = {x: e.clientX, y: e.clientY}
+      pickupData.element = frame;
+      pickupData.pos = { x: parseFloat(frame.dataset.transX), y: parseFloat(frame.dataset.transY)}
+    }
+    
+    
+    document.addEventListener("mousemove", move);
+    document.addEventListener("touchmove", move);
+    
+    let dragThrottle = false;
+    
+    function move(e){
+      if(pickupData.element !== null && !dragThrottle){
+        e.preventDefault();
+        dragThrottle = true;            // no need to call rAF up until next frame
+        requestAnimationFrame(() => updatePos(e)); // request 60fps animation
+      }
+
+
+      //   e.preventDefault();
+      //   if (event.clientX) {
+      //     let offsetX = event.clientX - pickupData.mouse.x + pickupData.pos.x;
+      //     let offsetY = event.clientY - pickupData.mouse.y + pickupData.pos.y;
+      //     pickupData.element.style.transform = `translate(${offsetX}px, ${offsetY}px)`
+      //   } else {
+      //     // touchmove
+      //     let offsetX = event.changedTouches[0].clientX - pickupData.mouse.x + pickupData.pos.x;
+      //     let offsetY = event.changedTouches[0].clientY - pickupData.mouse.y + pickupData.pos.y;
+      //     pickupData.element.style.transform = `translate(${offsetX}px, ${offsetY}px)`
+      //   }
+      // }
+    }
+
+    function updatePos(event){
+      dragThrottle = false;
+      if (event.clientX && !(event.clientY <= 0 || event.clientX <= 0 || (event.clientX >= window.innerWidth || event.clientY >= window.innerHeight))) {
+        let offsetX = event.clientX - pickupData.mouse.x + pickupData.pos.x;
+        let offsetY = event.clientY - pickupData.mouse.y + pickupData.pos.y;
+        pickupData.element.style.transform = `translate(${offsetX}px, ${offsetY}px)`
+      } else {
+        // touchmove
+        if (!(event.changedTouches[0].clientY <= 0 || event.changedTouches[0].clientX <= 0 || (event.changedTouches[0].clientX >= window.innerWidth || event.changedTouches[0].clientY >= window.innerHeight))){
+          let offsetX = event.changedTouches[0].clientX - pickupData.mouse.x + pickupData.pos.x;
+          let offsetY = event.changedTouches[0].clientY - pickupData.mouse.y + pickupData.pos.y;
+          pickupData.element.style.transform = `translate(${offsetX}px, ${offsetY}px)`
+        }
+      }
+    }
+
+    document.addEventListener("mouseup", drop);
+    document.addEventListener("touchend", drop);
+
+    function drop(e){
+      if(pickupData.element !== null){
+        const {x,y} = getTranslateValues(pickupData.element);
+        pickupData.element.dataset.transX = x;
+        pickupData.element.dataset.transY = y;
+        pickupData = {mouse: null, element: null, pos: null};
+      }
+    }
+
+    function getTranslateValues(element) {
+        const style = window.getComputedStyle(element)
+        const matrix =
+          style['transform'] || style.webkitTransform || style.mozTransform
+
+        if (matrix === 'none' || typeof matrix === 'undefined') {
+          return {
+            x: 0,
+            y: 0,
+            z: 0,
+          }
+        }
+        const matrixType = matrix.includes('3d') ? '3d' : '2d'
+        const matrixValues = matrix.match(/matrix.*\((.+)\)/)[1].split(', ')
+
+        if (matrixType === '2d') {
+          return {
+            x: matrixValues[4],
+            y: matrixValues[5],
+            z: 0,
+          }
         }
 
-        return array;
+        if (matrixType === '3d') {
+          return {
+            x: matrixValues[12],
+            y: matrixValues[13],
+            z: matrixValues[14],
+          }
+        }
       }
+
   </script>
 </body>
+
 </html>

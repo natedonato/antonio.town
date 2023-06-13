@@ -8,7 +8,7 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
-img, picture, video, canvas, svg {
+img, picture, video, canvas, svg, eleventy-image {
   display: block;
   max-width: 100%;
 }
@@ -24,7 +24,13 @@ body{
   
 }
 
+body{
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 .logo{
+  max-width: 88%;
   margin: 0 auto;
   width: fit-content;
   display: flex;
@@ -85,8 +91,13 @@ body{
   margin-bottom: 20px;
   object-position: center;
   object-fit: contain;
-  max-width: 95%;
   cursor: pointer;
+}
+
+.no-select{
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 @media only screen and (max-width: 600px) {
