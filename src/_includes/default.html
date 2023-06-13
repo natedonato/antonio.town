@@ -28,7 +28,8 @@
 
     {% for post in postslist | reverse %}
 
-    <div class="window photopost" style="width:fit-content" ontouchstart="moveToTop.call(this)" onmousedown="moveToTop.call(this)">
+    <div class="window photopost" style="width:fit-content" ontouchstart="moveToTop.call(this)"
+      onmousedown="moveToTop.call(this)">
       <div class="title-bar">
         <div class="title-bar-text no-select">
           {% if (loop.index0 == 0) %}
@@ -63,7 +64,7 @@
       // el.classList.toggle('maximized')
     }
 
-    function closeBar(e){
+    function closeBar(e) {
 
     }
 
@@ -141,60 +142,50 @@
     // draggable windows
     let bars = document.querySelectorAll('.title-bar');
     bars.forEach(bar => {
-      bar.addEventListener("mousedown",pickup);
-      bar.addEventListener("touchstart",pickup);
+      bar.addEventListener("mousedown", pickup);
+      bar.addEventListener("touchstart", pickup);
     })
 
-    let pickupData = {mouse: null, element: null};
-    
-    function pickup(e) {
-      if(e.target.tagName === "BUTTON"){return;}
+    let pickupData = { mouse: null, element: null };
 
+    function pickup(e) {
+      if (e.target.tagName === "BUTTON") { return; }
+      e.preventDefault();
       let frame = e.currentTarget.parentElement;
-      pickupData.mouse = {x: e.clientX, y: e.clientY}
+      if (event.clientX) {
+        pickupData.mouse = { x: e.clientX, y: e.clientY }
+      } else {
+        pickupData.mouse = { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY }
+      }
       pickupData.element = frame;
-      pickupData.pos = { x: parseFloat(frame.dataset.transX), y: parseFloat(frame.dataset.transY)}
+      pickupData.pos = { x: parseFloat(frame.dataset.transX), y: parseFloat(frame.dataset.transY) }
+      pickupData.scroll = {x: window.scrollX, y:window.scrollY};
     }
-    
-    
-    document.addEventListener("mousemove", move);
-    document.addEventListener("touchmove", move);
-    
+
+
+    document.addEventListener("mousemove", move, { passive: false });
+    document.addEventListener("touchmove", move, { passive: false });
+
     let dragThrottle = false;
-    
-    function move(e){
-      if(pickupData.element !== null && !dragThrottle){
-        e.preventDefault();
+
+    function move(e) {
+      if (pickupData.element !== null && !dragThrottle) {
         dragThrottle = true;            // no need to call rAF up until next frame
         requestAnimationFrame(() => updatePos(e)); // request 60fps animation
       }
-
-
-      //   e.preventDefault();
-      //   if (event.clientX) {
-      //     let offsetX = event.clientX - pickupData.mouse.x + pickupData.pos.x;
-      //     let offsetY = event.clientY - pickupData.mouse.y + pickupData.pos.y;
-      //     pickupData.element.style.transform = `translate(${offsetX}px, ${offsetY}px)`
-      //   } else {
-      //     // touchmove
-      //     let offsetX = event.changedTouches[0].clientX - pickupData.mouse.x + pickupData.pos.x;
-      //     let offsetY = event.changedTouches[0].clientY - pickupData.mouse.y + pickupData.pos.y;
-      //     pickupData.element.style.transform = `translate(${offsetX}px, ${offsetY}px)`
-      //   }
-      // }
     }
 
-    function updatePos(event){
+    function updatePos(event) {
       dragThrottle = false;
       if (event.clientX && !(event.clientY <= 0 || event.clientX <= 0 || (event.clientX >= window.innerWidth || event.clientY >= window.innerHeight))) {
-        let offsetX = event.clientX - pickupData.mouse.x + pickupData.pos.x;
-        let offsetY = event.clientY - pickupData.mouse.y + pickupData.pos.y;
+        let offsetX = event.clientX - pickupData.mouse.x + pickupData.pos.x + window.scrollX - pickupData.scroll.x;
+        let offsetY = event.clientY - pickupData.mouse.y + pickupData.pos.y + window.scrollY - pickupData.scroll.y;
         pickupData.element.style.transform = `translate(${offsetX}px, ${offsetY}px)`
       } else {
         // touchmove
-        if (!(event.changedTouches[0].clientY <= 0 || event.changedTouches[0].clientX <= 0 || (event.changedTouches[0].clientX >= window.innerWidth || event.changedTouches[0].clientY >= window.innerHeight))){
-          let offsetX = event.changedTouches[0].clientX - pickupData.mouse.x + pickupData.pos.x;
-          let offsetY = event.changedTouches[0].clientY - pickupData.mouse.y + pickupData.pos.y;
+        if (!(event.changedTouches[0].clientY <= 0 || event.changedTouches[0].clientX <= 0 || (event.changedTouches[0].clientX >= window.innerWidth || event.changedTouches[0].clientY >= window.innerHeight))) {
+          let offsetX = event.changedTouches[0].clientX - pickupData.mouse.x + pickupData.pos.x + window.scrollX - pickupData.scroll.x;
+          let offsetY = event.changedTouches[0].clientY - pickupData.mouse.y + pickupData.pos.y + window.scrollY - pickupData.scroll.y;
           pickupData.element.style.transform = `translate(${offsetX}px, ${offsetY}px)`
         }
       }
@@ -203,46 +194,46 @@
     document.addEventListener("mouseup", drop);
     document.addEventListener("touchend", drop);
 
-    function drop(e){
-      if(pickupData.element !== null){
-        const {x,y} = getTranslateValues(pickupData.element);
+    function drop(e) {
+      if (pickupData.element !== null) {
+        const { x, y } = getTranslateValues(pickupData.element);
         pickupData.element.dataset.transX = x;
         pickupData.element.dataset.transY = y;
-        pickupData = {mouse: null, element: null, pos: null};
+        pickupData = { mouse: null, element: null, pos: null };
       }
     }
 
     function getTranslateValues(element) {
-        const style = window.getComputedStyle(element)
-        const matrix =
-          style['transform'] || style.webkitTransform || style.mozTransform
+      const style = window.getComputedStyle(element)
+      const matrix =
+        style['transform'] || style.webkitTransform || style.mozTransform
 
-        if (matrix === 'none' || typeof matrix === 'undefined') {
-          return {
-            x: 0,
-            y: 0,
-            z: 0,
-          }
-        }
-        const matrixType = matrix.includes('3d') ? '3d' : '2d'
-        const matrixValues = matrix.match(/matrix.*\((.+)\)/)[1].split(', ')
-
-        if (matrixType === '2d') {
-          return {
-            x: matrixValues[4],
-            y: matrixValues[5],
-            z: 0,
-          }
-        }
-
-        if (matrixType === '3d') {
-          return {
-            x: matrixValues[12],
-            y: matrixValues[13],
-            z: matrixValues[14],
-          }
+      if (matrix === 'none' || typeof matrix === 'undefined') {
+        return {
+          x: 0,
+          y: 0,
+          z: 0,
         }
       }
+      const matrixType = matrix.includes('3d') ? '3d' : '2d'
+      const matrixValues = matrix.match(/matrix.*\((.+)\)/)[1].split(', ')
+
+      if (matrixType === '2d') {
+        return {
+          x: matrixValues[4],
+          y: matrixValues[5],
+          z: 0,
+        }
+      }
+
+      if (matrixType === '3d') {
+        return {
+          x: matrixValues[12],
+          y: matrixValues[13],
+          z: matrixValues[14],
+        }
+      }
+    }
 
   </script>
 </body>
