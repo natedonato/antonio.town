@@ -46,7 +46,8 @@
         </div>
       </div>
       <div class="window-body">
-        <img src="{{ post.data.photo }}" alt="post.data.title">
+        {% image "./src" + post.data.photo, post.data.title %}        
+        <!-- <img src="{{ post.data.photo }}" alt="post.data.title"> -->
       </div>
     </div>
     {% endfor %}
@@ -170,8 +171,8 @@
 
     function move(e) {
       if (pickupData.element !== null && !dragThrottle) {
-        dragThrottle = true;            // no need to call rAF up until next frame
-        requestAnimationFrame(() => updatePos(e)); // request 60fps animation
+        dragThrottle = true;  
+        requestAnimationFrame(() => updatePos(e));
       }
     }
 

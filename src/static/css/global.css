@@ -14,8 +14,7 @@ img,
 picture,
 video,
 canvas,
-svg,
-eleventy-image {
+svg {
   display: block;
   max-width: 100%;
 }
@@ -68,6 +67,11 @@ body {
   margin-bottom: 20px;
   position: relative;
   z-index: 1;
+}
+
+.photopost img{
+  height: auto;
+  position: relative;
 }
 
 .feed .photopost:last-of-type {
