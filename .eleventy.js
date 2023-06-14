@@ -8,14 +8,20 @@ const Image = require("@11ty/eleventy-img");
 module.exports = function (eleventyConfig) {
 
 	eleventyConfig.addShortcode("image", async function (src, alt) {
-    if (alt === undefined) {
-      // You bet we throw an error on missing alt (alt="" works okay)
-      throw new Error(`Missing \`alt\` on myImage from: ${src}`);
-    }
-    // console.log(src)
+    // if (alt === undefined) {
+    //   // You bet we throw an error on missing alt (alt="" works okay)
+    //   throw new Error(`Missing \`alt\` on myImage from: ${src}`);
+    // }
+    // widths:
+    // 600+: og xl
+    // 541-600: 400px l
+    // 441-540: 320px m 
+    // 375-440: 268px s
+    // 321-374: 225px xs
+    let minWidths = ["600","541","441","375"];
 
     let metadata = await Image(src, {
-      widths: [600, 400],
+      widths: [225, 268, 320, 400, "auto"],
       formats: ["webp"],
       urlPath: "/static/img/",
       outputDir: "./_site/static/img/",
@@ -24,15 +30,25 @@ module.exports = function (eleventyConfig) {
       },
     });
     // console.log(metadata)
-    let data = metadata.webp[metadata.webp.length - 1];
-    console.log(src, alt)
-    if(data.size === 0){
-      console.log(data.url)
-      console.log(data.size);
-      console.log(metadata);
-      data = metadata.webp.filter(el => el.size !== 0)[0] || data;
+    
+    let sizes = metadata.webp;
+    let [xs, s, m, l, xl] = sizes;
+    for(let i = 1; i < sizes.length; i++){
+      if(sizes[i].size === 0){
+        sizes[i] = sizes[i-1];
+      }
+    }  
+    let htmlSerial = "<picture>"
+    sizes = sizes.reverse();
+
+    for(let i = 0; i < 4; i++){
+      htmlSerial += `<source srcset="${sizes[i].url}" media="(min-width: ${minWidths[i]}px)">`;
     }
-    return `<img src="${data.url}" width="${data.width}" height="${data.height}" alt="${alt}" loading="lazy" decoding="async">`;
+
+    htmlSerial += `<img src="${sizes[4].url}" width="${sizes[0].width}" height="${sizes[0].height}" alt="${alt}" loading="lazy" decoding="async">`;
+    htmlSerial += "</picture>"
+
+    return htmlSerial;
   });
 
   // Disable automatic use of your .gitignore
