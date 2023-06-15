@@ -15,10 +15,10 @@ module.exports = function (eleventyConfig) {
     // widths:
     // 600+: og xl
     // 541-600: 400px l
-    // 441-540: 320px m 
+    // 441-540: 320px m
     // 375-440: 268px s
     // 321-374: 225px xs
-    let minWidths = ["600","541","441","375"];
+    let minWidths = ["600", "541", "441", "375"];
 
     let metadata = await Image(src, {
       widths: [225, 268, 320, 400, "auto"],
@@ -30,26 +30,46 @@ module.exports = function (eleventyConfig) {
       },
     });
     // console.log(metadata)
-    
+
     let sizes = metadata.webp;
     let [xs, s, m, l, xl] = sizes;
-    for(let i = 1; i < sizes.length; i++){
-      if(sizes[i].size === 0){
-        sizes[i] = sizes[i-1];
+    for (let i = 1; i < sizes.length; i++) {
+      if (sizes[i].size === 0) {
+        sizes[i] = sizes[i - 1];
       }
-    }  
-    let htmlSerial = "<picture>"
-    sizes = sizes.reverse();
-
-    for(let i = 0; i < 4; i++){
-      htmlSerial += `<source srcset="${sizes[i].url}" media="(min-width: ${minWidths[i]}px)">`;
     }
 
-    htmlSerial += `<img src="${sizes[4].url}" width="${sizes[0].width}" height="${sizes[0].height}" alt="${alt}" loading="lazy" decoding="async">`;
-    htmlSerial += "</picture>"
 
-    return htmlSerial;
+    // img srcset version
+    let srcSet = "";
+    for(let i = 0; i < sizes.length; i++){
+      srcSet += sizes[i].url;
+      srcSet += " " + sizes[i].width + "w, ";
+    };
+    srcSet = srcSet.substring(0, srcSet.length - 2);
+
+    let sizeStr = `min(80vw - 18px), ${xl.width}px, 942px)`;
+
+    let htmlSerial = `<img width="${xl.width}" height="${xl.height}" src="${xl.url}" srcset="${srcSet}" sizes="${sizeStr}" loading="lazy" decoding="async">`;
+    return htmlSerial
+
+    // picture version
+    // let htmlSerial = "<picture>";
+    // sizes = sizes.reverse();
+
+    // for (let i = 0; i < 4; i++) {
+    //   htmlSerial += `<source srcset="${sizes[i].url}" media="(min-width: ${minWidths[i]}px)">`;
+    // }
+
+    // htmlSerial += `<img src="${sizes[4].url}" width="${sizes[0].width}" height="${sizes[0].height}" alt="${alt}" loading="lazy" decoding="async">`;
+    // htmlSerial += "</picture>";
+
+    // return htmlSerial;
   });
+
+
+  // sizes
+  // min(80vw - 18px), ___px, 942px)
 
   // Disable automatic use of your .gitignore
   eleventyConfig.setUseGitIgnore(false);
