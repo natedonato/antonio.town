@@ -46,11 +46,10 @@
         </div>
       </div>
       <div class="window-body">
-        {% image "./src" + post.data.photo, post.data.title %}        
-        <!-- <img src="{{ post.data.photo }}" alt="post.data.title"> -->
+        {% if (loop.index0 < 2) %} {% image "./src" + post.data.photo, post.data.title, "eager" %} {% else %} {%
+          image "./src" + post.data.photo, post.data.title %} {% endif %} </div>
       </div>
-    </div>
-    {% endfor %}
+      {% endfor %}
   </section>
 
   <script>
@@ -70,32 +69,35 @@
     }
 
     // move clicked windo to "top"
-    let previousTop = document.querySelector('.photopost')
+    let previousTops = [document.querySelector('.photopost')]
 
     function moveToTop() {
-      previousTop.style.zIndex = 1;
+      for(let i = 0; i < previousTops.length; i++){
+        previousTops[i].style.zIndex = i + 2;
+      }
+
       this.style.zIndex = 100;
-      previousTop = this;
+
+      previousTops.push(this);
+      if(previousTops.length > 3){
+        previousTops.shift();
+      }
     }
 
 
     // give windows random offset
     function reposition() {
-      let offsetX = document.querySelector(".feed").clientWidth * 0.095;
+      let offsetX = document.querySelector(".feed").clientWidth * 0.125;
       let offsetY = 50;
       document.querySelectorAll('.photopost').forEach(el => {
-
         let x = Math.floor(Math.random() * offsetX - offsetX / 2)
         let y = Math.floor(Math.random() * offsetY - offsetY / 2)
         el.style.transform = `translate(${x}px ,${y}px)`
-        el.style.marginBottom = Math.random() * offsetY - offsetY / 2
         el.dataset.transX = x;
         el.dataset.transY = y;
       })
     }
     reposition();
-
-
 
 
 
@@ -138,8 +140,6 @@
       return array;
     }
 
-
-
     // draggable windows
     let bars = document.querySelectorAll('.title-bar');
     bars.forEach(bar => {
@@ -160,7 +160,7 @@
       }
       pickupData.element = frame;
       pickupData.pos = { x: parseFloat(frame.dataset.transX), y: parseFloat(frame.dataset.transY) }
-      pickupData.scroll = {x: window.scrollX, y:window.scrollY};
+      pickupData.scroll = { x: window.scrollX, y: window.scrollY };
     }
 
 
@@ -171,7 +171,7 @@
 
     function move(e) {
       if (pickupData.element !== null && !dragThrottle) {
-        dragThrottle = true;  
+        dragThrottle = true;
         requestAnimationFrame(() => updatePos(e));
       }
     }

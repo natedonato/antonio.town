@@ -7,7 +7,7 @@ const Image = require("@11ty/eleventy-img");
 
 module.exports = function (eleventyConfig) {
 
-	eleventyConfig.addShortcode("image", async function (src, alt) {
+	eleventyConfig.addShortcode("image", async function (src, alt, loading = "lazy") {
     // if (alt === undefined) {
     //   // You bet we throw an error on missing alt (alt="" works okay)
     //   throw new Error(`Missing \`alt\` on myImage from: ${src}`);
@@ -50,7 +50,7 @@ module.exports = function (eleventyConfig) {
 
     let sizeStr = `min(80vw - 18px), ${xl.width}px, 942px)`;
 
-    let htmlSerial = `<img width="${xl.width}" height="${xl.height}" src="${xl.url}" srcset="${srcSet}" sizes="${sizeStr}" loading="lazy" decoding="async">`;
+    let htmlSerial = `<img width="${xl.width}" height="${xl.height}" src="${xl.url}" srcset="${srcSet}" sizes="${sizeStr}" alt="${alt}" loading="${loading}" decoding="async">`;
     return htmlSerial
 
     // picture version
