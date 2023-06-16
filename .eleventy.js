@@ -48,7 +48,7 @@ module.exports = function (eleventyConfig) {
     };
     srcSet = srcSet.substring(0, srcSet.length - 2);
 
-    let sizeStr = `min(80vw - 18px), ${xl.width}px, 942px)`;
+    let sizeStr = `min(80vw - 18px, ${xl.width}px, 942px)`;
 
     let htmlSerial = `<img width="${xl.width}" height="${xl.height}" src="${xl.url}" srcset="${srcSet}" sizes="${sizeStr}" alt="${alt}" loading="${loading}" decoding="async">`;
     return htmlSerial
