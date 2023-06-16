@@ -5,10 +5,7 @@ let data = {
       "tonioposts"
   ]
 };
-data.test123 = "js activated"
 
-// if(process.env.NODE_ENV === "production") {
-	data.date = "git Created";
-// }
+data.date = "git Created";
 
 module.exports = data;

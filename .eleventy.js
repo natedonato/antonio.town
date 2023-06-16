@@ -79,8 +79,9 @@ module.exports = function (eleventyConfig) {
 
   // human readable date
   eleventyConfig.addFilter("readableDate", (dateObj) => {
+    console.log(dateObj);
     return DateTime.fromJSDate(dateObj, { zone: "utc" })
-      .minus({ hours: 19 })
+      // .minus({ hours: 19 })
       .toFormat("dd LLL yyyy");
   });
 
