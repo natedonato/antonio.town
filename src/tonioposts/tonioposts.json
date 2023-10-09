@@ -1,6 +1,7 @@
 {
     "layout": "tonioposts",
     "tags": [
-        "toniopost"
+        "toniopost",
+        "post"
     ]
 }

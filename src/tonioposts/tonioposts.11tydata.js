@@ -2,7 +2,8 @@ let data = {
   name: "tonioposts",
 	layout: "tonioposts",
   "tags": [
-      "tonioposts"
+      "tonioposts",
+      "posts"
   ]
 };
 
